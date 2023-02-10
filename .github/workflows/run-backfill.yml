@@ -36,4 +36,4 @@ jobs:
           [[ -n $start_date ]] && arr+=("?start_date=$start_date")
           
           url=$(IFS=; echo "${arr[*]}")
-          echo "$url"
+          curl -XPOST "$url"
