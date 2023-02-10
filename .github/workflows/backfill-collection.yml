@@ -1,0 +1,29 @@
+name: Backfill collection
+run-name: Running backfill of ${{ inputs.collection }} on ${{ inputs.environment }}
+
+on:
+  workflow_call:
+    inputs:
+      collection:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      start_date:
+        type: string
+        required: false
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start backfill service
+        run: |
+          start_date="${{ inputs.start_date }}"
+          echo "$start_date"
+          
+          arr=("https://backfill-service.${{inputs.environment}}.clipboardhealth.org/backfilling/${{inputs.collection}}/start")
+          [[ -n $start_date ]] && arr+=("?start_date=$start_date")
+          
+          url=$(IFS=; echo "${arr[*]}")
+          echo "$url"

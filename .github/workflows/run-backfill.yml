@@ -1,5 +1,5 @@
 name: Run Backfill
-run-name: Build backfill of ${{ inputs.collection }} on ${{ inputs.environment }}
+run-name: Triggering backfill of ${{ inputs.collection }} on ${{ inputs.environment }}
 
 on:
   workflow_dispatch:
@@ -7,10 +7,12 @@ on:
       collection:
         type: choice
         options:
+          - all
           - exclusions
           - facilityprofiles
           - agentprofiles
           - shifts
+          - priorityaccesses
         default: exclusions
         required: true
       environment:
@@ -24,16 +26,13 @@ on:
         type: string
         required: false
 jobs:
-  backfill:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Start backfill service
-        run: |
-          start_date="${{ inputs.start_date }}"
-          echo "$start_date"
-          
-          arr=("https://backfill-service.${{inputs.environment}}.clipboardhealth.org/backfilling/${{inputs.collection}}/start")
-          [[ -n $start_date ]] && arr+=("?start_date=$start_date")
-          
-          url=$(IFS=; echo "${arr[*]}")
-          curl -XPOST "$url"
+  backfill-all-collections:
+    if: ${{ inputs.collection == 'all' }}
+    strategy:
+      matrix:
+        collection: ['exclusions', 'facilityprofiles', 'agentprofiles', 'shifts', 'priorityaccesses']
+    uses: ./.github/workflows/backfill-collection.yml
+    with:
+      collection: ${{ matrix.collection }}
+      environment: ${{ inputs.environment }}
+      start_date: ${{ inputs.start_date }}
