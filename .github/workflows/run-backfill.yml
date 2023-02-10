@@ -1,0 +1,35 @@
+name: Run Backfill
+run-name: Build backfill of ${{ inputs.collection }} on ${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      collection:
+        type: choice
+        options:
+          - exclusions
+          - facilityprofiles
+          - agentprofiles
+          - shifts
+        default: exclusions
+        required: true
+      environment:
+        type: choice
+        options:
+          - staging
+          - development
+        default: development
+        required: true
+      start_date:
+        type: string
+        required: false
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start backfill service
+        run: |
+          arr=("https://backfill-service.${{inputs.environment}}.clipboardhealth.org/backfilling/${{inputs.collection}}/start")
+          [[ -n ${{ inputs.start_date }} ]] && arr+=("${{ inputs.start_date }}")
+          
+          echo "${arr[*]}"
