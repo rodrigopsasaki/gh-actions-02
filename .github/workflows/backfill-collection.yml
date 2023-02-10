@@ -13,11 +13,12 @@ on:
       start_date:
         type: string
         required: false
+        description: the date from which to start the backfill. It is required if you want to run backfill for all collections
 jobs:
   backfill:
     runs-on: ubuntu-latest
     steps:
-      - name: Start backfill service
+      - name: Backfill collection
         run: |
           start_date="${{ inputs.start_date }}"
           echo "$start_date"
