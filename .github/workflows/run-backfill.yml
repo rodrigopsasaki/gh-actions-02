@@ -30,6 +30,6 @@ jobs:
       - name: Start backfill service
         run: |
           arr=("https://backfill-service.${{inputs.environment}}.clipboardhealth.org/backfilling/${{inputs.collection}}/start")
-          [[ -n ${{ inputs.start_date }} ]] && arr+=("${{ inputs.start_date }}")
+          [[ -n $INPUT_START_DATE ]] && arr+=("$?start_date=$INPUT_START_DATE")
           
           echo "${arr[*]}"
