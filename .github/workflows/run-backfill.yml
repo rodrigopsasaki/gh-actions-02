@@ -35,4 +35,5 @@ jobs:
           arr=("https://backfill-service.${{inputs.environment}}.clipboardhealth.org/backfilling/${{inputs.collection}}/start")
           [[ -n $start_date ]] && arr+=("?start_date=$start_date")
           
-          echo "${arr[*]}"
+          url=$(IFS=; echo "${arr[*]}")
+          echo "$url"
